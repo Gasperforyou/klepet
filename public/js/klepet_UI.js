@@ -3,14 +3,7 @@ function divElementEnostavniTekst(sporocilo) {
   var jeSmesko = sporocilo.indexOf('http://sandbox.lavbic.net/teaching/OIS/gradivo/') > -1;
   var soSlike = sporocilo.indexOf('Smiley face') >-1;
   if (jeSmesko || soSlike) {
-    
-    if(sporocilo.indexOf('.png') >-1){
-          sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('png\' /&gt;', 'png\' />');
-    } else if(sporocilo.indexOf('.jpg') >-1){
-          sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('jpg\' /&gt;', 'jpg\' />');
-    } else if(sporocilo.indexOf('.gif') >-1){
-          sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('gif\' /&gt;', 'gif\' />');
-    }
+    sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace(/&lt;img/g, '<img').replace(/png\' \/&gt;/g, 'png\' />').replace(/jpg\' \/&gt;/g, 'jpg\' />').replace(/gif\' \/&gt;/g, 'gif\' />');
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
   } else{
     return $('<div style="font-weight: bold;"></div>').text(sporocilo);
@@ -182,7 +175,13 @@ function dodajSlike(vbesedilo){
       
   }
   for(var i = pozZac.length-1;i>=0 ; i--){
-    vbesedilo =  vbesedilo.substring(0, pozZac[i]-8)+vbesedilo.substring(pozZac[i]-8, pozKon[i]).replace("http", "<img  alt='Smiley face' style = 'margin-left: 80px;' width='200'  src='http")+"' />"+vbesedilo.substring(pozKon[i]);
+    var odmik = 0;
+    if(vbesedilo.charAt(pozZac[i]-4) == 's'){
+      odmik = 8;
+    } else {
+      odmik = 7;
+    }
+    vbesedilo += vbesedilo.substring(pozZac[i]-odmik, pozKon[i]).replace("http", "<img  alt='Smiley face' style = 'margin-left: 20px;' width='200'  src='http")+"' />";
   }
   return vbesedilo;
 }
