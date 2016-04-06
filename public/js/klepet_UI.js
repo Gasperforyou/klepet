@@ -2,8 +2,10 @@
 function divElementEnostavniTekst(sporocilo) {
   var jeSmesko = sporocilo.indexOf('http://sandbox.lavbic.net/teaching/OIS/gradivo/') > -1;
   var soSlike = sporocilo.indexOf('Smiley face') >-1;
-  if (jeSmesko || soSlike) {
+  var jeVideo = sporocilo.indexOf('https://www.youtube.com/embed/') >-1;
+  if (jeSmesko || jeVideo || soSlike) {
     sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace(/&lt;img/g, '<img').replace(/png\' \/&gt;/g, 'png\' />').replace(/jpg\' \/&gt;/g, 'jpg\' />').replace(/gif\' \/&gt;/g, 'gif\' />');
+    sporocilo = sporocilo.replace(/&lt;iframe/g, '<iframe').replace(/allowfullscreen&gt;&lt;\/iframe&gt;/g, 'allowfullscreen></iframe>');
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
   } else{
     return $('<div style="font-weight: bold;"></div>').text(sporocilo);
@@ -18,6 +20,8 @@ function procesirajVnosUporabnika(klepetApp, socket) {
   var sporocilo = $('#poslji-sporocilo').val();
   sporocilo = dodajSlike(sporocilo);
   sporocilo = dodajSmeske(sporocilo);
+  
+  sporocilo = dodajVideoposnetke(sporocilo);
   var sistemskoSporocilo;
 
   if (sporocilo.charAt(0) == '/') {
@@ -153,8 +157,6 @@ function dodajSmeske(vhodnoBesedilo) {
   return vhodnoBesedilo;
 }
 
-
-
 function dodajSlike(vbesedilo){
   var dobre = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=";
   
@@ -203,3 +205,18 @@ function dodajSlike(vbesedilo){
   }
   return vbesedilo;
 }
+
+function dodajVideoposnetke(vbesedilo){
+  var obdelaj = vbesedilo;
+  var pozicije = [];
+  while(obdelaj.indexOf("https://www.youtube.com/watch?v=")>-1){
+    var pozicija =vbesedilo.indexOf("https://www.youtube.com/watch?v=");
+    pozicije.push(pozicija);
+    obdelaj = obdelaj.substring(pozicija+11+32);
+  }
+  for (var i = 0; i<pozicije.length; i++){
+    vbesedilo += vbesedilo.substring(pozicija, pozicija+11+32).replace("https://www.youtube.com/watch?v=", "<iframe width = '200' height = '150' style = 'margin-left: 20px' src='https://www.youtube.com/embed/")+"' allowfullscreen></iframe>";
+  }
+  return vbesedilo;
+}
+
